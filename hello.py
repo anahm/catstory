@@ -1,5 +1,5 @@
 import os
-from flask import Flask, session, render_template, url_for, request, abort
+from flask import Flask, session, render_template, request, abort
 import pusher
 
 # db boilerplate code?
@@ -8,18 +8,13 @@ from flask.ext.sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 app.config['DEBUG'] = True
 app.secret_key = '\xd8\xd0=\x1b\xcf5\xc0\xd7gt\xc1#\xffT\xe1i^*2Bq\x8ad\xd7'
-p = pusher.Pusher(
-	app_id='50464',
-	key='f0690b5e328eda453c5b',
-	secret='a6da6bf5e1eea3f480fb'
-)
 
 #app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
 
 db = SQLAlchemy(app)
 
-from models import Game#, Player, TextEntry, PicturesEntry
+from models import Game, Player#, TextEntry, PicturesEntry
 
 
 @app.route('/')
@@ -28,34 +23,35 @@ def hello():
 
 @app.route('/test_pusher')
 def testPusher():
-	
+	p = pusher.Pusher(
+	  app_id='50464',
+	  key='f0690b5e328eda453c5b',
+	  secret='a6da6bf5e1eea3f480fb'
+	)
 	p['test_channel'].trigger('my_event', {'message': 'hello world'})
 	return 'pushed'
 
 @app.route('/makeGame', methods=['POST', 'GET'])
 def makeGame():
 	if request.method == 'POST':
-		# username = request.form['username']
-		# # make player object
-		# clientId = 1 #TODO(junjun): make random Id
-		# player = Player(username, clientId)
-		# db.session.add(player)
-		# # make a game object
-		# #TODO(junjun): figure out how to make player list
-		# game = Game(player._id, 0, 1)
-		# db.session.add(guest)
-		# db.session.commit()
-		# # get game id
-		gameId = 1 # game._id
-		# session['gameId'] = gameId
-		# session['username'] = username
-		# session['clientId'] = clientId
-		# return render_template('newGame.html', gameId=gameId)	
-
+		username = request.form['username']
+		# make player object
+		clientId = 1 #TODO(junjun): make random Id
+		player = Player(name=username, clientId=clientId)
+		db.session.add(player)
 		# make a game object
+		#TODO(junjun): figure out how to make player list
+		game = Game(players=[player], currentRound=0, numRounds=1)
+		db.session.add(game)
+		db.session.commit()
+		print game.players.count()
 		# get game id
+		gameId = game.id
+		print gameId
 		session['gameId'] = gameId
-		return render_template('start.html', gameId=gameId)
+		session['username'] = username
+		session['clientId'] = clientId
+		return render_template('newGame.html', gameId=gameId)	
 	abort(401)
 
 @app.route('/confirmStart')
@@ -90,18 +86,9 @@ def join():
 		# game.numRounds++
 		# db.session.add(game)????
 		# db.session.commit()
-
-			# TODO(peter): socket call to host "friend joined"
-		username = request.form['username']
-		gameId = request.form['gameId']
-		session['username'] = username
-		session['gameId'] = gameId
-		# create player
-		# add player to game 
-		p['test_channel'].trigger('game' + gameId, {'newPlayer': { 'name': username }})
+		# TODO(peter): socket call to host "friend joined"
 		return "joined"
-	else:
-		return render_template('join.html', gameId=1)
+	abort(401)
 	#return "hi"
 
 @app.route('/recieveData', methods=['POST', 'GET'])
