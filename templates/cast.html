@@ -95,9 +95,11 @@
 			channel.bind('endGame', function() {
 				endGame();
 			});
+			new QRCode(document.getElementById("qrcode"), "http://cats.ptzlabs.com/join/{{session.gameId}}");
 		</script>
 	{% endblock %}
 	{% block content %}
+		<div id="qrcode"></div>
 		Players:
 		{% include 'includes/userlist.html' %}
 		Round: 
