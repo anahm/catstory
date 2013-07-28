@@ -16,8 +16,10 @@ app.secret_key = '\xd8\xd0=\x1b\xcf5\xc0\xd7gt\xc1#\xffT\xe1i^*2Bq\x8ad\xd7'
 BING_LINK = 'https://api.datamarket.azure.com/Bing/Search/Image?$format=json'
 BING_API_KEY = 'N95x+ajghz4OP94AMQgR46/TkWDBwxmtatNd5Wkvkrc'
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
+if 'DATABASE_URL' in os.environ:
+	app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+else:
+	app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
 
 db = SQLAlchemy(app)
 from models import Game, Player, TextEntry, PicturesEntry
