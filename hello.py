@@ -111,11 +111,12 @@ def getFinalResults():
 
 		results = []
 		if (game.players.count() % 2 == 0):
+			print "here"
 			# even number of players. last player submitted pictures
 			entry = PictureEntry.query.filter_by(game = gameId, round = game.numRounds-1, fromId = prevPlayer.id).first()
 			results.append(dict(content = entry.pictures, type="pic"))
 			prevEntryId = entry.inResponseTo
-			if game.numRounds > 2:
+			if game.numRounds > 1:
 				# python range is non inclusive on upper side
 				for i in range(2, game.numRounds + 1):
 					if i % 2 == 0:
@@ -127,26 +128,29 @@ def getFinalResults():
 						# pic entry
 						entry = PictureEntry.query.filter_by(id = prevEntryId).first()
 						results.append(dict(content = entry.pictures, type="pic"))
-						prevEntryId = entry.inResponseToi
+						prevEntryId = entry.inResponseTo
 
 		else:
 			# odd number of players. last player submitted text
 			entry = TextEntry.query.filter_by(game = gameId, round = game.numRounds-1, fromId = prevPlayer.id).first()
 			results.append(dict(content = entry.content, type="text"))
 			prevEntryId = entry.inResponseTo
-			if game.numRounds > 2:
+			print "test"
+			print entry.inResponseTo
+			if game.numRounds > 1:
 				# python range is non inclusive on upper side
 				for i in range(2, game.numRounds + 1):
 					if i % 2 == 1:
 						# text entry
 						entry = TextEntry.query.filter_by(id = prevEntryId).first()
 						results.append(dict(content = entry.content, type="text"))
+						print entry.inResponseTo
 						prevEntryId = entry.inResponseTo
 					else:
 						# pic entry
 						entry = PictureEntry.query.filter_by(id = prevEntryId).first()
 						results.append(dict(content = entry.pictures, type="pic"))
-						prevEntryId = entry.inResponseToi
+						prevEntryId = entry.inResponseTo
 
 		return json.dumps(results)
 
@@ -271,8 +275,7 @@ def game():
 
 @app.route('/final')
 def finalPage():
-	gameId = session['gameId']
-	return "Finished game " + str(gameId)
+	return render_template('final.html')
 
 # TESTTTTTT
 @app.route('/image')
