@@ -11,11 +11,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 
 db = SQLAlchemy(app)
 
-from models import Game
-from models import Player
-from models import TextEntry
-from models import PicturesEntry
-
 @app.route('/')
 def hello():
     return 'Hello World! :)'
