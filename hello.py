@@ -6,6 +6,7 @@ import requests
 import json
 import string
 from requests.auth import HTTPBasicAuth
+from nltk.corpus import stopwords
 
 # db boilerplate code?
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -152,6 +153,7 @@ def imageSearch(query):
 	prevSentence = ''.join(ch for ch in prevSentence if ch not in exclude)
 	querySplit = query.split(" ")
 	prevSentence = prevSentence.split(" ")
+	prevSentence = [w for w in prevSentence if not w in stopwords.words('english')]
 	for queryWord in querySplit:
 		if queryWord in prevSentence:
 			return "failed"
