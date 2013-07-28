@@ -4,6 +4,7 @@
 	{% block head %}
 		{{ super() }}
 		<script type="text/javascript">
+			var timeLeft = 30;
 			updateRound = function() {
 				$.post('/getData', {clientId: {{session.clientId}}, gameId: {{session.gameId}} }, function(data) {
 					data = JSON.parse(data);
@@ -16,6 +17,13 @@
 						$("#prev-text-entry").html(data.content);
 						$("#picture-entry").fadeIn(100)
 					}
+					timeLeft = 30;
+					setInterval(function() {
+						document.getElementById("timer").innerHTML = timeLeft--;
+					}, 1000);
+					setTimeout(function() {
+						$('#text-entry-form').trigger('submit');
+					}, 5000);
 				});
 			}
 			var channel = pusher.subscribe('game{{session.gameId}}');
@@ -84,5 +92,7 @@
 				<input type="text" name="query" placeholder="Start searching for image..." />
 			</form>
 		</div>
+		<div id="timer"></div>
+
 	{% endblock %}
 
