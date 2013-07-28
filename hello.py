@@ -213,6 +213,10 @@ def imageSearch(query):
 def hello():
     return render_template('index.html')
 
+@app.route('/cast')
+def cast():
+	return render_template('cast.html')
+
 @app.route('/test_words')
 def testWords():
 	return render_template('testWords.html')
@@ -259,7 +263,6 @@ def confirmStart():
 	# get game object
 	game = Game.query.filter_by(id = gameId).first()
 	p['game' + str(gameId)].trigger('gameStart', {})
-
 	return redirect("/game")
 
 @app.route('/game')
