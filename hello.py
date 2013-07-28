@@ -120,10 +120,12 @@ def sendData():
 		game = Game.query.filter_by(id = gameId).first()
 		content = request.form['content']
 		inResponseTo = request.form['inResponseTo']
+		if game.currentRound == 0:
+			inResponseTo = None
 		#check if text or picture
 		size = 0
 		if (game.currentRound % 2 == 0): 
-		 	textEntry = TextEntry(game = gameId, content = content, inResponseTo = None, fromId = player.id, round = game.currentRound)
+		 	textEntry = TextEntry(game = gameId, content = content, inResponseTo = inResponseTo, fromId = player.id, round = game.currentRound)
 		 	db.session.add(textEntry)
 		 	db.session.commit()
 		 	size = TextEntry.query.filter_by(game = gameId, round=game.currentRound).count()
