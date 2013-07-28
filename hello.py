@@ -157,6 +157,71 @@ def getFinalResults():
 
 		return json.dumps(results)
 
+# from final.html, get final data from the current user
+# params: clientId, gameId
+@app.route('/getFinalResultsAll', methods=['POST', 'GET'])
+def getFinalResultsAll():
+	if request.method == "POST":
+		# get all users
+		gameId = request.form['gameId']
+		allClientIds = []
+		players = Player.query.filter_by(game_id = gameId)
+		for cur in players: 
+			allClientIds.append(cur.clientId)
+			# # get game
+		for clientId in allClientIds:
+			player = Player.query.filter_by(clientId = clientId).first()
+			game = Game.query.filter_by(id = gameId).first()
+			prevOrder = (player.order - 1) % game.players.count()
+			prevPlayer = Player.query.filter_by(game_id = gameId, order = prevOrder).first()
+
+			results = []
+			if (game.players.count() % 2 == 0):
+				print "here"
+				# even number of players. last player submitted pictures
+				entry = PictureEntry.query.filter_by(game = gameId, round = game.numRounds-1, fromId = prevPlayer.id).first()
+				player = Player.query.filter_by(id = entry.fromId).first()
+				results.append(dict(content = entry.pictures, type="pic", playerName=player.name))
+				prevEntryId = entry.inResponseTo
+				if game.numRounds > 1:
+					# python range is non inclusive on upper side
+					for i in range(2, game.numRounds + 1):
+						if i % 2 == 0:
+							# text entry
+							entry = TextEntry.query.filter_by(id = prevEntryId).first()
+							player = Player.query.filter_by(id = entry.fromId).first()
+							results.append(dict(content = entry.content, type="text", playerName=player.name))
+							prevEntryId = entry.inResponseTo
+						else:
+							# pic entry
+							entry = PictureEntry.query.filter_by(id = prevEntryId).first()
+							player = Player.query.filter_by(id = entry.fromId).first()
+							results.append(dict(content = entry.pictures, type="pic", playerName=player.name))
+							prevEntryId = entry.inResponseTo
+
+			else:
+				# odd number of players. last player submitted text
+				entry = TextEntry.query.filter_by(game = gameId, round = game.numRounds-1, fromId = prevPlayer.id).first()
+				player = Player.query.filter_by(id = entry.fromId).first()
+				results.append(dict(content = entry.content, type="text", playerName=player.name))
+				prevEntryId = entry.inResponseTo
+				if game.numRounds > 1:
+					# python range is non inclusive on upper side
+					for i in range(2, game.numRounds + 1):
+						if i % 2 == 1:
+							# text entry
+							entry = TextEntry.query.filter_by(id = prevEntryId).first()
+							player = Player.query.filter_by(id = entry.fromId).first()
+							results.append(dict(content = entry.content, type="text", playerName=player.name))
+							prevEntryId = entry.inResponseTo
+						else:
+							# pic entry
+							entry = PictureEntry.query.filter_by(id = prevEntryId).first()
+							player = Player.query.filter_by(id = entry.fromId).first()
+							results.append(dict(content = entry.pictures, type="pic", playerName=player.name))
+							prevEntryId = entry.inResponseTo
+		return json.dumps(results)
+
 # from game.html, send what user has input
 # params: clientId, gameId, content, inResponseTo 
 @app.route('/sendData', methods=['POST', 'GET'])
@@ -220,6 +285,10 @@ def imageSearch(query):
 def hello():
     return render_template('index.html')
 
+@app.route('/cast')
+def cast():
+	return render_template('cast.html')
+
 @app.route('/test_words')
 def testWords():
 	return render_template('testWords.html')
@@ -266,7 +335,6 @@ def confirmStart():
 	# get game object
 	game = Game.query.filter_by(id = gameId).first()
 	p['game' + str(gameId)].trigger('gameStart', {})
-
 	return redirect("/game")
 
 @app.route('/game')
