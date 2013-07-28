@@ -89,6 +89,9 @@
 			});
 		</script>
 	{% endblock %}
+	{% block headerspace %}
+		<div id="timer"></div>
+	{% endblock %}
 	{% block content %}
 		<div id="loading">
 			<p>Loading...</p>
@@ -104,7 +107,7 @@
 		<div id="picture-entry" style="display: none">
 			{% include 'includes/picentry.html' with context %}
 		</div>
-		<div id="timer"></div>
+		
 
 	{% endblock %}
 

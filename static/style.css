@@ -9,6 +9,7 @@ header {
 	padding: 10px;
 	border-bottom: 1px solid 8C0B0B;
 	box-shadow: 0px 0px 20px rgba(0,0,0,0.7);
+	overflow: hidden;
 }
 
 header h1 {
@@ -17,6 +18,13 @@ header h1 {
 	padding: 0;
 	font-size: 25px;
 	text-shadow: 1px 1px 5px rgba(0,0,0,0.8);
+	float: left;
+	display: inline-block;
+}
+header #timer {
+	float: right;
+	color: white;
+	font-size: 25px;
 }
 
 header h1 span {
