@@ -5,12 +5,12 @@ import random
 import requests
 import json
 import string
+import nltk
 from requests.auth import HTTPBasicAuth
 from nltk.corpus import stopwords
 
 # db boilerplate code?
 from flask.ext.sqlalchemy import SQLAlchemy
-
 nltk.data.path.append('./nltk_data/')
 app = Flask(__name__)
 app.config['DEBUG'] = True
