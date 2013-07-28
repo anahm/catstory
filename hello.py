@@ -1,5 +1,5 @@
 import os
-from flask import Flask, session, render_template, request, abort
+from flask import Flask, session, render_template, url_for, request, abort
 import pusher
 #from _ import Game, Player, TextEntry, PicturesEntry
 
@@ -9,6 +9,11 @@ from flask.ext.sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 app.config['DEBUG'] = True
 app.secret_key = '\xd8\xd0=\x1b\xcf5\xc0\xd7gt\xc1#\xffT\xe1i^*2Bq\x8ad\xd7'
+p = pusher.Pusher(
+	app_id='50464',
+	key='f0690b5e328eda453c5b',
+	secret='a6da6bf5e1eea3f480fb'
+)
 
 #app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
@@ -21,11 +26,7 @@ def hello():
 
 @app.route('/test_pusher')
 def testPusher():
-	p = pusher.Pusher(
-	  app_id='50464',
-	  key='f0690b5e328eda453c5b',
-	  secret='a6da6bf5e1eea3f480fb'
-	)
+	
 	p['test_channel'].trigger('my_event', {'message': 'hello world'})
 	return 'pushed'
 
@@ -47,7 +48,12 @@ def makeGame():
 		# session['gameId'] = gameId
 		# session['username'] = username
 		# session['clientId'] = clientId
-		return render_template('newGame.html', gameId=gameId)	
+		# return render_template('newGame.html', gameId=gameId)	
+
+		# make a game object
+		# get game id
+		session['gameId'] = gameId
+		return render_template('start.html', gameId=gameId)
 	abort(401)
 
 @app.route('/confirmStart')
@@ -82,9 +88,18 @@ def join():
 		# game.numRounds++
 		# db.session.add(game)????
 		# db.session.commit()
-		# TODO(peter): socket call to host "friend joined"
+
+			# TODO(peter): socket call to host "friend joined"
+		username = request.form['username']
+		gameId = request.form['gameId']
+		session['username'] = username
+		session['gameId'] = gameId
+		# create player
+		# add player to game 
+		p['test_channel'].trigger('game' + gameId, {'newPlayer': { 'name': username }})
 		return "joined"
-	abort(401)
+	else:
+		return render_template('join.html', gameId=1)
 	#return "hi"
 
 @app.route('/recieveData', methods=['POST', 'GET'])
