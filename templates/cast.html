@@ -55,7 +55,7 @@
 							html = '<div class="client-column">';
 							for (var i = clientData.length - 1; i >= 0; i--) {
 								if(clientData[i].type == 'text') {
-									html += '<div class="welcome">' + clientData[i].content + '</div>';
+									html += '<div class="welcome">' + clientData[i].content + '<br /><div class="username">' +clientData[i].playerName + '</div></div>';
 								} else {
 									pictures = JSON.parse(clientData[i].content);
 									html += '<div class="welcome">';
