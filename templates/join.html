@@ -8,6 +8,9 @@
 		channel.bind('playerJoin', function(data) {
 			addPlayerToList(data.newPlayer.name);
 		});
+		channel.bind('gameStart', function() {
+			window.location = "/game"
+		})
 		$(document).ready(function() {
 			$.post('/getPlayersForGame/{{session.gameId}}', function(players) {
 				players = JSON.parse(players);

@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+	{% block title %}game{% endblock %}
+	{% block headerTitle %}game {{session.gameId}}{% endblock %}
+	{% block head %}
+		{{ super() }}
+		<script type="text/javascript">
+			updateRound = function() {
+				$.post('/getData', {clientId: {{session.clientId}}, gameId: {{session.gameId}} }, function(data) {
+					data = JSON.parse(data);
+					console.log(data);
+					$("#loading").fadeOut(100);
+					if(data.type == "text") {
+						$("#text-entry").fadeIn(100);
+					} else if (data.type == 'pic') {
+						console.log("pic");
+						$("#prev-text-entry").html(data.content);
+						$("#picture-entry").fadeIn(100)
+					}
+				});
+			}
+			var channel = pusher.subscribe('game{{session.gameId}}');
+			channel.bind('newRound', function() {
+				console.log('new round');
+			});
+			$(document).ready(function() {
+				updateRound();	
+				$("#text-entry-form").submit(function() {
+					textEntry = $(this).find('input[name=textEntry]').val();
+					$.post('/sendData', {
+						clientId: {{session.clientId}},
+						gameId: {{session.gameId}},
+						content: textEntry,
+						inResponseTo: null}, function() {
+							console.log('sent');
+						})
+					return false;
+				})
+			});
+		</script>
+	{% endblock %}
+	{% block content %}
+		<div id="loading">
+			<p>Loading...</p>
+		</div>
+		<div id="text-entry" style="display: none">
+			<p>Think of a sentence. Any sentence.</p>
+			<form id="text-entry-form">
+				<input type="text" name="textEntry" placeholder="Type a sentence" />
+				<button>Send!</button>
+			</form>
+		</div>
+		<div id="picture-entry" style="display: none">
+			<div id="prev-text-entry">
+			</div>
+			<script type="text/javascript">
+				$(document).ready(function() {
+					$("#image_search_form").submit(function() {
+						$("ul#images li.image").remove();
+						$("ul#images li.start").fadeOut(100);
+						$("ul#images li.loading").fadeIn(100);
+						query = $("input[name=query]").val();
+						$.post('/imageSearch/' + query, function(data) {
+							$("ul#images li.loading").fadeOut(100, function() {
+								d = JSON.parse(data).d.results;
+								for(var i = 0; i < d.length; i++) {
+									$("ul#images").append('<li class="image"><img src="' + d[i].MediaUrl + '" /></li>');
+								}
+							});	
+						})
+						return false;
+					});
+				});
+		  	</script>
+			<ul id="images">
+				<li class="loading" style="display: none">
+					Loading...
+				</li>
+				<li class="start">
+					Start describing your sentence by searching for images
+				</li>
+			</ul>
+
+			<form id="image_search_form">
+				<input type="text" name="query" placeholder="Start searching for image..." />
+			</form>
+		</div>
+	{% endblock %}
+
