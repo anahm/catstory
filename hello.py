@@ -21,13 +21,27 @@ def testPusher():
 	p['test_channel'].trigger('my_event', {'message': 'hello world'})
 	return 'pushed'
 
-@app.route('/makeGame')
+@app.route('/makeGame', methods=['POST', 'GET'])
 def makeGame():
-	# make a game object
-	# get game id
-	gameId = 1
-	session['gameId'] = gameId
-	return "url: something/game/" + str(gameId)	
+	if request.method = 'POST':
+		username = request.form['username']
+		# make a game object
+		# get game id
+		gameId = 1
+		username = 'Ali'
+		session['gameId'] = gameId
+		session['username'] = username
+		session['clientId'] = 1 #random id
+		#make player object
+		return render_template('newGame.html', gameId=gameId)	
+	abort(401)
+
+@app.route('/confirmStart')
+def confirmStart():
+	gameId = session['gameId']
+	# get game object
+	# game start socket call
+	return render_template('game.html', gameId=gameId)
 
 @app.route('/game/<int:gameId>')
 def game(gameId):
@@ -40,15 +54,36 @@ def join():
 	if request.method == 'POST':
 		username = request.form['username']
 		session['username'] = username
+		session['clientId'] = 1 #random id
 		gameId = session['gameId']
 		# create player
-		# add player to game 
+		# add player to game
+		# socket call to host "friend joined"
 		return "joined"
 	abort(401)
 	#return "hi"
 
-@app.route('/recieveText', methods=['POST', 'GET'])
-def receiveText():
+@app.route('/recieveData')
+def receiveData():
+	# get user
+	# get game
+	# check if text or picture
+	# from text/pictures, get game = game, round = game.currentRound, from = game.user.previous
+	# return pictures or text + text/picture id
+	return "HI"
+
+@app.route('/sendText', methods=['POST', 'GET'])
+def sendData():
 	if request.method == 'POST':
-		return "post"
+		#get user
+		#get game
+		#check if text or picture
+		#make picture/text: game = game, pictures = request.form['pictures/text'], inresponseto = request.form['prevId'], from = user, round = game.round
+		#get all from picture/text: game = game, round = round
+			#if size = game.players.size
+				#game.round++
+				#if game.round = game.numrounds
+					#sockets call to end
+				#else 
+					#sockets call to start new game
 	abort(401)
