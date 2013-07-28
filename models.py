@@ -11,12 +11,21 @@ class Game(db.Model):
     def __repr__(self):
         return '<Game Id = %d>' % self.id
 
+    def getPlayersSerialized(self):
+        toReturn = []
+        for player in self.players.all():
+            toReturn.append(player.serialize())
+        return toReturn
+
 class Player(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80))
     clientId = db.Column(db.Integer, unique=True)
     game_id = db.Column(db.Integer, db.ForeignKey('game.id'))
     order = db.Column(db.Integer)
+
+    def serialize(model):
+        return dict(name = model.name, clientId = model.clientId, gameId = model.game_id)
 
 class TextEntry(db.Model):
     id = db.Column(db.Integer, primary_key=True)

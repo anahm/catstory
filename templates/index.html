@@ -3,9 +3,6 @@
 	{% block head %}
 		{{ super() }}
 		<script type="text/javascript">
-		var channel = pusher.subscribe('test_channel');
-		channel.bind('my_event', function(data) {
-		});
 	  	</script>
 	{% endblock %}
 	{% block content %}

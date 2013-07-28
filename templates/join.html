@@ -4,15 +4,34 @@
 	{% block head %}
 		{{ super() }}
 		<script type="text/javascript">
-		var channel = pusher.subscribe('test_channel');
+		var channel = pusher.subscribe('game{{session.gameId}}');
+		channel.bind('playerJoin', function(data) {
+			addPlayerToList(data.newPlayer.name);
+		});
 		$(document).ready(function() {
+			$.post('/getPlayersForGame/{{session.gameId}}', function(players) {
+				players = JSON.parse(players);
+				for(var i = 0; i < players.length; i++) {
+					addPlayerToList(players[i].name);
+				}
+			});
 			$("#joinGame").click(function() {
-				$.post('/join', { username: "Peter", gameId: 1 });
+				username = $("input[name=username]").val()
+				$.post('/join', { username: username });
+				$("#join-game-form").fadeOut(100);
+				$("#waiting").fadeIn(100);
 			});
 		});
 	  	</script>
 	{% endblock %}
 	{% block content %}
 		<p>Waiting for players...</p>
-		<button id="joinGame">Join game</button>	
+		{% include 'includes/userlist.html' %}
+		<div id="join-game-form">
+			<input type="text" name="username" placeholder="Your name" />
+			<button id="joinGame">Join game</button>	
+		</div>
+		<div id="waiting" style="display: none">
+			<p>Waiting for host to start game...</p>
+		</div>
 	{% endblock %}

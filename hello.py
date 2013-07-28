@@ -3,8 +3,8 @@ from flask import Flask, session, render_template, url_for, request, abort
 import pusher
 import random
 import requests
+import json
 from requests.auth import HTTPBasicAuth
-#from _ import Game, Player, TextEntry, PicturesEntry
 
 # db boilerplate code?
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -22,7 +22,7 @@ else:
 	app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
 
 db = SQLAlchemy(app)
-from models import Game, Player, TextEntry, PicturesEntry
+from models import Game, Player, TextEntry, PictureEntry
 
 p = pusher.Pusher(
 	app_id='50464',
@@ -55,7 +55,7 @@ def join():
 		game.numRounds = game.numRounds + 1
 		db.session.commit()
 		
-		p['test_channel'].trigger('game' + str(gameId), {'newPlayer': {'name': username}})
+		p['game' + str(gameId)].trigger('playerJoin', {'newPlayer': {'name': username}})
 		return "joined"
 	abort(401)
 	#return "hi"
@@ -70,7 +70,15 @@ def confirmStart():
 
 	return render_template('game.html', gameId=gameId)
 
+# from start.html and join.html, gets a list of players
+# params: gameId
+@app.route('/getPlayersForGame/<int:gameId>', methods=['POST', 'GET'])
+def getPlayersForGame(gameId):
+	game = Game.query.filter_by(id = gameId).first()
+	return json.dumps(game.getPlayersSerialized())
+
 # from game.html, gets next round's data
+# params: clientId
 @app.route('/getData', methods=['POST', 'GET'])
 def getData():
 	if request.method == 'POST':
@@ -85,18 +93,15 @@ def getData():
 		# check if text or picture
 		if (game.currentRound % 2 == 0): 
 			entry = TextEntry.query.filter_by(game = gameId, round = game.currentRound-1, fromId = prevPlayer.id)
-			db.session.add(entry)
-			db.session.commit()
 		 	return render_template('recieveText.html', content = entry.content, inResponseTo = entry.id)
 		else:
-		 	entry = PicturesEntry.query.filter_by(game = gameId, round = game.currentRound-1, fromId = prevPlayer.id)
-		 	db.session.add(entry)
-		 	db.session.commit()
+		 	entry = PictureEntry.query.filter_by(game = gameId, round = game.currentRound-1, fromId = prevPlayer.id)
 		 	return render_template('recievePictures.html', content = entry.pictures, inResponseTo = entry.id)
 		return "results"
 	abort(401)
 
 # from game.html, send what user has input
+# params: clientId, content, inResponseTo 
 @app.route('/sendData', methods=['POST', 'GET'])
 def sendData():
 	if request.method == 'POST':
@@ -117,7 +122,7 @@ def sendData():
 		 	db.session.commit()
 		 	size = TextEntry.query.filter_by(gameId = gameId, round=game.currentRound).count()
 		else:
-		 	pictureEntry = PicturesEntry(game = gameId, content = content, inResponseTo = inResponseTo, fromId = player.id, round = game.currentRound)
+		 	pictureEntry = PictureEntry(game = gameId, content = content, inResponseTo = inResponseTo, fromId = player.id, round = game.currentRound)
 		 	db.session.add(pictureEntry)
 		 	db.session.commit()
 		 	size = PictureEntry.query.filter_by(gameId = gameId, round=game.currentRound).count()

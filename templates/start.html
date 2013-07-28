@@ -4,17 +4,23 @@
 	{% block head %}
 		{{ super() }}
 		<script type="text/javascript">
-		var channel = pusher.subscribe('test_channel');
-		channel.bind('game{{session.gameId}}', function(data) {
-			$("#joined_user_list").append('<li>' + data.newPlayer.name + '</li>');
+		var channel = pusher.subscribe('game{{session.gameId}}');
+		channel.bind('playerJoin', function(data) {
+			addPlayerToList(data.newPlayer.name);
 		});
+		$(document).ready(function(){
+			$.post('/getPlayersForGame/{{session.gameId}}', function(players) {
+				players = JSON.parse(players);
+				for(var i = 0; i < players.length; i++) {
+					addPlayerToList(players[i].name);
+				}
+			});
+		})
 	  	</script>
 	{% endblock %}
 	{% block content %}
 		<p>Session id: {{session.gameId}}</p>
 		<p>Waiting for players...</p>
-		<ul id="joined_user_list">
-			<li>{{session.username}}</li>
-		</ul>
+		{% include 'includes/userlist.html' %}
 		<button id="startGame">Start game</button>	
 	{% endblock %}
