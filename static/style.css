@@ -24,6 +24,28 @@ header h1 span {
 	font-size: 15px;
 	font-weight: normal;
 }
+div.welcome {
+	text-align: center;
+	padding: 10px;
+	font-weight: 300;
+	border-bottom: 1px solid #eee;
+}
+div.welcome div.number {
+	width: 30px;
+	height: 30px;
+	display: inline-block;
+	line-height: 27px;
+	border-radius: 15px;
+	font-size: 13px;
+	background: #ccc;
+	color: white;
+}
+div.welcome div.example {
+	color: #8a0000;
+	font-size: 20px;
+	font-weight: bold;
+	padding: 10px;
+}
 
 .content {
 	padding: 10px;
@@ -72,7 +94,7 @@ header h1 span {
 	background-image: linear-gradient(top, #f37873 0%, #db504d 50%, #cb0500 50%, #a20601 100%);
 }
 
-ul#images, ul#selected-images {
+ul#images, ul#selected-images, ul#prev-images {
 	overflow-x: auto;
 	overflow-y: hidden;
 	width: 100%;
@@ -81,10 +103,10 @@ ul#images, ul#selected-images {
 	margin: 0 0 10px;
 	padding: 0;
 }
-ul#selected-images {
+ul#selected-images, ul#prev-images{
 	height: 140px;
 }
-ul#images li, ul#selected-images li {
+ul#images li, ul#selected-images li, ul#prev-images li {
 	display: inline-block;
 	height: 300px;
 	text-align: center;
@@ -95,7 +117,7 @@ ul#images li, ul#selected-images li {
 	box-shadow: 0px 0px 10px rgba(0,0,0,0.5);
 	margin: 10px 10px 10px;
 }
-ul#selected-images li{
+ul#selected-images li, ul#prev-images li {
 	height: 120px;
 	width: 120px;
 }
@@ -113,7 +135,7 @@ ul#images li img {
 	height: 300px;
 	width: auto;
 }
-ul#selected-images li img {
+ul#selected-images li img, ul#prev-images li img {
 	height: 120px;
 	width: auto;
 }

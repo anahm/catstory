@@ -6,6 +6,32 @@
 	  	</script>
 	{% endblock %}
 	{% block content %}
+		<div class="welcome">
+			<div class="number">1</div><br />
+			Start typing a sentence
+			<div class="example">"Cats are awesome."</div>
+		</div>
+		<div class="welcome">
+			<div class="number">2</div><br />
+			Your friend will try to match it with some images
+			<ul id="prev-images">
+				<li><img src="http://static.tumblr.com/6t3upxl/Aawm08w0l/khout-kitten-458882.jpeg" /></li>
+				<li><img src="http://wiki.guildwars.com/images/thumb/6/60/User_Jette_awesome.svg/2048px-User_Jette_awesome.svg.png" /></li>
+			</ul>
+		</div>
+		<div class="welcome">
+			<div class="number">3</div><br />
+			Next friend will try to guess your sentence based on the images	
+			<div class="example">"Cats can smile."</div>
+		</div>
+		<div class="welcome">
+			<div class="number">4</div><br />
+			????
+		</div>
+		<div class="welcome">
+			<div class="number">5</div><br />
+			PROFIT
+		</div>
 		<form action="/makeGame" method="post">
 			<input type="text" name="username" placeholder="Your name" />
 			<button>Start game</button>

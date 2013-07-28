@@ -59,20 +59,6 @@ def join():
 	abort(401)
 	#return "hi"
 
-# from start.html, host to start game
-@app.route('/confirmStart')
-def confirmStart():
-	gameId = session['gameId']
-	# get game object
-	game = Game.query.filter_by(id = gameId).first()
-	p['game' + str(gameId)].trigger('gameStart', {})
-
-	return redirect("/game")
-
-@app.route('/game')
-def game():
-	return render_template('game.html')
-
 # from start.html and join.html, gets a list of players
 # params: gameId
 @app.route('/getPlayersForGame/<int:gameId>', methods=['POST', 'GET'])
@@ -98,15 +84,71 @@ def getData():
 			# TextEntry - should look for previous PicEntry
 			entry = PictureEntry.query.filter_by(game = gameId, round = game.currentRound-1, fromId = prevPlayer.id).first()
 			if entry is None:
-				return json.dumps(dict(type = "text"))
-		 	return json.dumps(dict(type = "text", content = entry.pictures, inResponseTo = entry.id))
+				return json.dumps(dict(type = "text", roundNum = game.currentRound + 1, totalRounds = game.players.count()))
+		 	return json.dumps(dict(type = "text", content = entry.pictures, inResponseTo = entry.id, roundNum = game.currentRound + 1, totalRounds = game.players.count()))
+
 		else:
 			# PicEntry - should look for previous TextEntry
 		 	entry = TextEntry.query.filter_by(game = gameId, round = game.currentRound-1, fromId = prevPlayer.id).first()
 			if entry is None:
-				return json.dumps(dict(type = "pic"))
-		 	return json.dumps(dict(type = "pic", content = entry.content, inResponseTo = entry.id))
+				return json.dumps(dict(type = "pic", roundNum = game.currentRound + 1, totalRounds = game.players.count()))
+		 	return json.dumps(dict(type = "pic", content = entry.content, inResponseTo = entry.id, roundNum = game.currentRound + 1, totalRounds = game.players.count()))
 	abort(401)
+
+# from final.html, get final data from the current user
+# params: clientId, gameId
+@app.route('/getFinalResults', methods=['POST', 'GET'])
+def getFinalResults():
+	if request.method == "POST":
+		# get user
+		clientId = request.form['clientId'] # is this a thing?
+		player = Player.query.filter_by(clientId = clientId).first()
+		# # get game
+		gameId = request.form['gameId']
+		game = Game.query.filter_by(id = gameId).first()
+		prevOrder = (player.order - 1) % game.players.count()
+		prevPlayer = Player.query.filter_by(game_id = gameId, order = prevOrder).first()
+
+		results = []
+		if (game.players.count() % 2 == 0):
+			# even number of players. last player submitted pictures
+			entry = PictureEntry.query.filter_by(game = gameId, round = game.numRounds-1, fromId = prevPlayer.id).first()
+			results.append(dict(content = entry.pictures, type="pic"))
+			prevEntryId = entry.inResponseTo
+			if game.numRounds > 2:
+				# python range is non inclusive on upper side
+				for i in range(2, game.numRounds + 1):
+					if i % 2 == 0:
+						# text entry
+						entry = TextEntry.query.filter_by(id = prevEntryId).first()
+						results.append(dict(content = entry.content, type="text"))
+						prevEntryId = entry.inResponseTo
+					else:
+						# pic entry
+						entry = PictureEntry.query.filter_by(id = prevEntryId).first()
+						results.append(dict(content = entry.pictures, type="pic"))
+						prevEntryId = entry.inResponseToi
+
+		else:
+			# odd number of players. last player submitted text
+			entry = TextEntry.query.filter_by(game = gameId, round = game.numRounds-1, fromId = prevPlayer.id).first()
+			results.append(dict(content = entry.content, type="text"))
+			prevEntryId = entry.inResponseTo
+			if game.numRounds > 2:
+				# python range is non inclusive on upper side
+				for i in range(2, game.numRounds + 1):
+					if i % 2 == 1:
+						# text entry
+						entry = TextEntry.query.filter_by(id = prevEntryId).first()
+						results.append(dict(content = entry.content, type="text"))
+						prevEntryId = entry.inResponseTo
+					else:
+						# pic entry
+						entry = PictureEntry.query.filter_by(id = prevEntryId).first()
+						results.append(dict(content = entry.pictures, type="pic"))
+						prevEntryId = entry.inResponseToi
+
+		return json.dumps(results)
 
 # from game.html, send what user has input
 # params: clientId, gameId, content, inResponseTo 
@@ -140,7 +182,7 @@ def sendData():
 		 	game.currentRound = game.currentRound + 1
 		 	db.session.commit()
 		 	if (game.currentRound == game.numRounds):
-		 		#TODO(peter): sockets call to end
+		 		p['game' + str(gameId)].trigger('endGame', {})
 		 		print "end"
 		 	else: 
 				p['game' + str(gameId)].trigger('newRound', {})
@@ -208,6 +250,26 @@ def makeGame():
 def displayJoin(gameId):
 	session['gameId'] = gameId
 	return render_template('join.html', gameId=gameId)
+
+
+# from start.html, host to start game
+@app.route('/confirmStart')
+def confirmStart():
+	gameId = session['gameId']
+	# get game object
+	game = Game.query.filter_by(id = gameId).first()
+	p['game' + str(gameId)].trigger('gameStart', {})
+
+	return redirect("/game")
+
+@app.route('/game')
+def game():
+	return render_template('game.html')
+
+@app.route('/final')
+def finalPage():
+	gameId = session['gameId']
+	return "Finished game " + str(gameId)
 
 # TESTTTTTT
 @app.route('/image')
