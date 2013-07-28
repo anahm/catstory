@@ -23,7 +23,7 @@ def testPusher():
 
 @app.route('/makeGame', methods=['POST', 'GET'])
 def makeGame():
-	if request.method = 'POST':
+	if request.method == 'POST':
 		# username = request.form['username']
 		# # make player object
 		# clientId = 1 #TODO(junjun): make random Id
