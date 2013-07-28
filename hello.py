@@ -20,7 +20,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
 
 db = SQLAlchemy(app)
-from models import Game, Player#, TextEntry, PicturesEntry
+from models import Game, Player, TextEntry, PicturesEntry
 
 
 @app.route('/')
