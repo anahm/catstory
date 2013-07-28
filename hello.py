@@ -1,4 +1,5 @@
 import os
+import pusher
 from flask import Flask, session, render_template
 
 app = Flask(__name__)
