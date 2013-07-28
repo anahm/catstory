@@ -78,6 +78,7 @@
 					$("#timer").fadeOut(100);
 					$(this).slideUp(100);
 					textEntry = $(this).find('input[name=textEntry]').val();
+					$(this).find('input[name=textEntry]').val('');
 					$.post('/sendData', {
 						clientId: {{session.clientId}},
 						gameId: {{session.gameId}},

@@ -165,13 +165,14 @@ def getFinalResultsAll():
 		# get all users
 		gameId = request.form['gameId']
 		allClientIds = []
-		results = []
+		allResults = []
 
 		players = Player.query.filter_by(game_id = gameId)
 		for cur in players: 
 			allClientIds.append(cur.clientId)
 			# # get game
 		for clientId in allClientIds:
+			results = []
 			player = Player.query.filter_by(clientId = clientId).first()
 			game = Game.query.filter_by(id = gameId).first()
 			prevOrder = (player.order - 1) % game.players.count()
@@ -221,7 +222,8 @@ def getFinalResultsAll():
 							player = Player.query.filter_by(id = entry.fromId).first()
 							results.append(dict(content = entry.pictures, type="pic", playerName=player.name))
 							prevEntryId = entry.inResponseTo
-		return json.dumps(results)
+			allResults.append(results)
+		return json.dumps(allResults)
 
 # from game.html, send what user has input
 # params: clientId, gameId, content, inResponseTo 

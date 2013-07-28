@@ -43,26 +43,32 @@
 					$('#timer').html(0);
 				}
 				$('#round').html('Final');
+				$('#prefinal').slideUp(300);
 
 				$.post('/getFinalResultsAll', {
 					gameId: {{session.gameId}}
 					}, function(data) {
 						data = JSON.parse(data);
-						for (var i = data.length - 1; i >= 0; i--) {
-							if(data[i].type == 'text') {
-								$("#finals").append('<div class="welcome">' + data[i].content + '</div>');
-							} else {
-								pictures = JSON.parse(data[i].content);
-								html = '<div class="welcome">';
-								html += '<ul id="prev-images">';
-								for(var j = 0; j < pictures.length; j++) {
-									html += '<li class="image"><img src="' + pictures[j] + '" /></li>';
+						console.log(data);
+						for (var c = 0; c < data.length; c++) {
+							clientData = data[c];
+							html = '<div class="client-column">';
+							for (var i = clientData.length - 1; i >= 0; i--) {
+								if(clientData[i].type == 'text') {
+									html += '<div class="welcome">' + clientData[i].content + '</div>';
+								} else {
+									pictures = JSON.parse(clientData[i].content);
+									html += '<div class="welcome">';
+									html += '<ul id="prev-images">';
+									for(var j = 0; j < pictures.length; j++) {
+										html += '<li class="image"><img src="' + pictures[j] + '" /></li>';
+									}
+									html += '</ul>';
+									html += '<div class="username">' + clientData[i].playerName + '</div>'
+									html += '</div>';
 								}
-								html += '</ul>';
-								html += '</div>';
-								$("#finals").append(html);
 							}
-							
+							$("#finals").append(html);
 						}
 						[{"content": "how i met your mother", "type": "text"}, {"content": "[\"http://www.barneystinsonblog.com/wp-content/uploads/2011/02/BarneyStinsonBlog.com-03.jpg\"]", "type": "pic"}, {"content": "peter zhang is awesome", "type": "text"}] 
 					});
@@ -85,6 +91,7 @@
 						addPlayerToList(players[i].name);
 					}
 				});
+				new QRCode(document.getElementById("qrcode"), "http://cats.ptzlabs.com/join/{{session.gameId}}");
 			})
 
 			channel.bind('gameStart', function() {
@@ -95,16 +102,17 @@
 			channel.bind('endGame', function() {
 				endGame();
 			});
-			new QRCode(document.getElementById("qrcode"), "http://cats.ptzlabs.com/join/{{session.gameId}}");
 		</script>
 	{% endblock %}
 	{% block content %}
-		<div id="qrcode"></div>
-		Players:
-		{% include 'includes/userlist.html' %}
-		Round: 
-		<div id="round"></div>
-		Time left:
-		<div id="timer"></div>
-		<div id= "finals"></div>
+		<div id="prefinal">
+			<div id="qrcode"></div>
+			Players:
+			{% include 'includes/userlist.html' %}
+			Round: 
+			<div id="round"></div>
+			Time left:
+			<div id="timer"></div>
+		</div>
+		<div id="finals"></div>
 	{% endblock %}

@@ -169,3 +169,8 @@ ul#selected-images li img, ul#prev-images li img {
 	height: 120px;
 	width: auto;
 }
+
+.client-column {
+	width: 20%;
+	float: left;
+}
