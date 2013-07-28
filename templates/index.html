@@ -9,5 +9,8 @@
 	  	</script>
 	{% endblock %}
 	{% block content %}
-		<a href="/makeGame"><button>Start game</button></a>
+		<form action="/makeGame" method="post">
+			<input type="text" name="username" placeholder="Your name" />
+			<button>Start game</button>
+		</form>
 	{% endblock %}

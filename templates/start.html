@@ -5,7 +5,7 @@
 		{{ super() }}
 		<script type="text/javascript">
 		var channel = pusher.subscribe('test_channel');
-		channel.bind('game{{gameId}}', function(data) {
+		channel.bind('game{{session.gameId}}', function(data) {
 			$("#joined_user_list").append('<li>' + data.newPlayer.name + '</li>');
 		});
 	  	</script>
@@ -13,7 +13,7 @@
 	{% block content %}
 		<p>Waiting for players...</p>
 		<ul id="joined_user_list">
-			<li>Your name</li>
+			<li>{{session.username}}</li>
 		</ul>
 		<button id="startGame">Start game</button>	
 	{% endblock %}

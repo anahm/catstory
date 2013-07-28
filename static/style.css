@@ -29,6 +29,17 @@ header h1 span {
 	padding: 10px;
 }
 
+.content input {
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	width: 100%;
+	box-sizing: border-box;
+	font-family: "Oswald", sans-serif;
+	font-weight: 300;
+	font-size: 15px;
+	padding: 10px;
+	margin-bottom: 10px;
+}
 .content button {
 	background-color: #ee432e;
 	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #ee432e), color-stop(50%, #c63929), color-stop(50%, #b51700), color-stop(100%, #891100));

@@ -1,6 +1,6 @@
 import os
 from flask import Flask, session, render_template, request, abort
-import pusher
+import pusher, random
 
 # db boilerplate code?
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -13,7 +13,6 @@ app.secret_key = '\xd8\xd0=\x1b\xcf5\xc0\xd7gt\xc1#\xffT\xe1i^*2Bq\x8ad\xd7'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
 
 db = SQLAlchemy(app)
-
 from models import Game, Player#, TextEntry, PicturesEntry
 
 
@@ -35,8 +34,9 @@ def testPusher():
 def makeGame():
 	if request.method == 'POST':
 		username = request.form['username']
+
 		# make player object
-		clientId = 1 #TODO(junjun): make random Id
+		clientId = random.randrange(0, 10000) #TODO(junjun): make random Id
 		player = Player(name=username, clientId=clientId)
 		db.session.add(player)
 		# make a game object
@@ -51,15 +51,15 @@ def makeGame():
 		session['gameId'] = gameId
 		session['username'] = username
 		session['clientId'] = clientId
-		return render_template('newGame.html', gameId=gameId)	
+		return render_template('start.html')
 	abort(401)
 
 @app.route('/confirmStart')
 def confirmStart():
 	gameId = session['gameId']
-	# # get game object
-	# game = Game.query.filter_by(id = gameId).first()
-	# #TODO(peter): game start socket call
+	# get game object
+	game = Game.query.filter_by(id = gameId).first()
+	#TODO(peter): game start socket call
 
 	return render_template('game.html', gameId=gameId)
 
@@ -72,20 +72,19 @@ def game(gameId):
 def join():
 	# get username, gameId from POST
 	if request.method == 'POST':
-		# username = request.form['username']
-		# session['username'] = username
-		# clientId = 1
-		# session['clientId'] = clientId #TODO(junjun): random id
-		# gameId = session['gameId']
-		# # create player
-		# player = Player(username, clientId)
-		# db.session.add(player)
-		# # add player to game
-		# game = Game.query.filter_by(id = gameId).first()
-		# game.players += player._id
-		# game.numRounds++
-		# db.session.add(game)????
-		# db.session.commit()
+		username = request.form['username']
+		session['username'] = username
+		clientId = random.randrange(0, 10000)
+		session['clientId'] = clientId #TODO(junjun): random id
+		gameId = session['gameId']
+		# create player
+		player = Player(name=username, clientId=clientId)
+		db.session.add(player)
+		# add player to game
+		game = Game.query.filter_by(id = gameId).first()
+		game.players.append(player)
+		game.numRounds = game.numRounds + 1
+		db.session.commit()
 		# TODO(peter): socket call to host "friend joined"
 		return "joined"
 	abort(401)
@@ -94,12 +93,12 @@ def join():
 @app.route('/recieveData', methods=['POST', 'GET'])
 def receiveData():
 	if request.method == 'POST':
-		# # get user
-		# clientId = POST['clientId'] # is this a thing?
-		# user = User.query.filter_by(clientId = clientId).first()
+		# get user
+		clientId = POST['clientId'] # is this a thing?
+		user = Player.query.filter_by(clientId = clientId).first()
 		# # get game
-		# gameId = POST['gameId']
-		# game = Game.query.filter_by(id = gameId).first()
+		gameId = POST['gameId']
+		game = Game.query.filter_by(id = gameId).first()
 		# # currentPlayerIndex = game.players index of clientId
 		# prevPlayer = game.players.get(currentPlayerIndex--) # mod 
 		# # check if text or picture
