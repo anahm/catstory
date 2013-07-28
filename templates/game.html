@@ -4,6 +4,7 @@
 	{% block head %}
 		{{ super() }}
 		<script type="text/javascript">
+
 			var inResponseTo = null;
 
 			updateRound = function() {
@@ -82,8 +83,12 @@
 						$("ul#images li.start").fadeOut(100);
 						$("ul#images li.loading").fadeIn(100);
 						query = $("input[name=query]").val();
-						$.post('/imageSearch/' + query, function(data) {
+
+						$.post('/imageSearch/' + query, {prevSentence : $("#prev-text-entry").html()}, function(data) {
 							$("ul#images li.loading").fadeOut(100, function() {
+								if (data == 'failed') {
+									return false;
+								}
 								d = JSON.parse(data).d.results;
 								for(var i = 0; i < d.length; i++) {
 									$("ul#images").append('<li class="image"><img src="' + d[i].MediaUrl + '" /></li>');

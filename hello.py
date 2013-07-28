@@ -4,6 +4,7 @@ import pusher
 import random
 import requests
 import json
+import string
 from requests.auth import HTTPBasicAuth
 
 # db boilerplate code?
@@ -145,6 +146,15 @@ def sendData():
 
 @app.route('/imageSearch/<query>', methods=['POST', 'GET'])
 def imageSearch(query):
+	prevSentence = request.form['prevSentence']
+	exclude = set(string.punctuation)
+	query = ''.join(ch for ch in query if ch not in exclude)
+	prevSentence = ''.join(ch for ch in prevSentence if ch not in exclude)
+	querySplit = query.split(" ")
+	prevSentence = prevSentence.split(" ")
+	for queryWord in querySplit:
+		if queryWord in prevSentence:
+			return "failed"
 	r = requests.get(BING_LINK + "&Query=%27" + query + "%27", auth=HTTPBasicAuth(BING_API_KEY, BING_API_KEY))
 	return r.text
 
