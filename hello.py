@@ -165,6 +165,8 @@ def getFinalResultsAll():
 		# get all users
 		gameId = request.form['gameId']
 		allClientIds = []
+		results = []
+
 		players = Player.query.filter_by(game_id = gameId)
 		for cur in players: 
 			allClientIds.append(cur.clientId)
@@ -175,7 +177,6 @@ def getFinalResultsAll():
 			prevOrder = (player.order - 1) % game.players.count()
 			prevPlayer = Player.query.filter_by(game_id = gameId, order = prevOrder).first()
 
-			results = []
 			if (game.players.count() % 2 == 0):
 				print "here"
 				# even number of players. last player submitted pictures
