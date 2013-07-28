@@ -1,5 +1,7 @@
 # sentence db
 
+from hello import db
+
 class Sentence(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     gameId = db.Column(db.Integer, unique=True)
