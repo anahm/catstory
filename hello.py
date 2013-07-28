@@ -27,7 +27,7 @@ def makeGame():
 	# get game id
 	gameId = 1
 	session['gameId'] = gameId
-	return "HI " + str(gameId)	
+	return "url: something/game/" + str(gameId)	
 
 @app.route('/game/<int:gameId>')
 def game(gameId):
