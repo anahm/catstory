@@ -1,7 +1,6 @@
 import os
+import pusher
 from flask import Flask, session, render_template
-
-# db boilerplate code?
 from flask.ext.sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -11,10 +10,19 @@ app.secret_key = '\xd8\xd0=\x1b\xcf5\xc0\xd7gt\xc1#\xffT\xe1i^*2Bq\x8ad\xd7'
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 db = SQLAlchemy(app)
 
-
 @app.route('/')
 def hello():
-    return 'Hello World! :)'
+    return render_template('index.html')
+
+@app.route('/test_pusher')
+def testPusher():
+	p = pusher.Pusher(
+	  app_id='50464',
+	  key='f0690b5e328eda453c5b',
+	  secret='a6da6bf5e1eea3f480fb'
+	)
+	p['test_channel'].trigger('my_event', {'message': 'hello world'})
+	return 'pushed'
 
 @app.route('/start')
 def start():
@@ -26,4 +34,3 @@ def start():
 
 # @app.route('/join/<int:gameId>')
 # def join(username, gameId):
-

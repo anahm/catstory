@@ -9,4 +9,5 @@ decorator==3.4.0
 gunicorn==17.5
 itsdangerous==0.22
 sqlalchemy-migrate==0.7.2
+pusher==0.7
 wsgiref==0.1.2
