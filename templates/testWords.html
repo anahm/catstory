@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+	{% block title %}welcome{% endblock %}
+	{% block head %}
+		{{ super() }}
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$("#image_search_form").submit(function() {
+					alert("submit");
+					query = $("input[name=query]").val();
+					$.post('http://text-processing.com/api/stem/', {text: query}, function(data) {
+						alert(data);
+					});
+					return false;
+				});
+			})
+	  	</script>
+	{% endblock %}
+	{% block content %}
+		<ul id="images">
+			<li class="loading" style="display: none">
+				Loading...
+			</li>
+			<li class="start">
+				Start describing your sentence by searching for images
+			</li>
+		</ul>
+
+		<form id="image_search_form">
+			<input type="text" name="query" placeholder="Start searching for image..." />
+		</form>
+	{% endblock %}
