@@ -4,17 +4,17 @@ from flask import Flask, session, render_template
 # db boilerplate code?
 from flask.ext.sqlalchemy import SQLAlchemy
 
-from models import Game
-from models import Player
-from models import TextEntry
-from models import PicturesEntry
-
 app = Flask(__name__)
 app.config['DEBUG'] = True
 app.secret_key = '\xd8\xd0=\x1b\xcf5\xc0\xd7gt\xc1#\xffT\xe1i^*2Bq\x8ad\xd7'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 db = SQLAlchemy(app)
+
+from models import Game
+from models import Player
+from models import TextEntry
+from models import PicturesEntry
 
 
 @app.route('/')
