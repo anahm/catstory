@@ -45,11 +45,10 @@ def makeGame():
 		username = request.form['username']
 
 		# make player object
-		clientId = random.randrange(0, 10000) #TODO(junjun): make random Id
+		clientId = random.randrange(0, 10000)
 		player = Player(name=username, clientId=clientId, order=0)
 		db.session.add(player)
 		# make a game object
-		#TODO(junjun): figure out how to make player list
 		game = Game(players=[player], currentRound=0, numRounds=1)
 		db.session.add(game)
 		db.session.commit()
