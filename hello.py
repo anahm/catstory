@@ -4,7 +4,10 @@ from flask import Flask, session, render_template
 # db boilerplate code?
 from flask.ext.sqlalchemy import SQLAlchemy
 
-from models import Sentence
+from models import Game
+from models import Player
+from models import TextEntry
+from models import PicturesEntry
 
 app = Flask(__name__)
 app.config['DEBUG'] = True

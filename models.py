@@ -2,20 +2,6 @@
 
 from hello import db
 
-class Sentence(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    gameId = db.Column(db.Integer, unique=True)
-    orderId = db.Column(db.Integer, unique=True)
-    text = db.Column(db.String(120), unique=True)
-
-    def __init__(self, gameId, orderId, text):
-        self.gameId = gameId
-        self.orderId = orderId
-        self.text = text
-
-    def __repr__(self):
-        return '<User %r>' % self.id
-
 class Game(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     players = db.Column(db.String(500), unique=True)
@@ -50,4 +36,94 @@ class Game(db.Model):
     def setNumRounds(self, newVal):
         self.numRounds = newVal
         return
+
+class Player(db.model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), unique=True)
+    clientId = db.Column(db.String(20), unique=True)
+
+    def __init__(self, name, clientId):
+        self.name = name
+        self.clientId = clientId
+
+    def __repr__(self):
+        return self.name
+
+    def getId(self):
+        return self.id
+
+    def getName(self):
+        return self.name
+
+    def setName(self, n):
+        self.name = n
+        return
+
+class TextEntry(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    game = db.Column(db.Integer, unique=True)
+    inResponseTo = db.Column(db.Integer, unique=True)
+    content = db.Column(db.String(120), unique=True)
+
+    def __init__(self, gameId, orderId, text):
+        self.game = gameId
+        self.inResponseTo = orderId
+        self.content = text
+
+    def __repr__(self):
+        return id
+
+    def getGame(self):
+        return self.game
+
+    def getInResponseTo(self):
+        return self.inReponseTo
+
+    def getContent(self):
+        return content
+
+    def setGame(self, g):
+        self.game = g
+        return
+
+    def setInReponseTo(self, i):
+        self.inReponseTo = i
+        return
+
+    def setContent(self, c):
+        self.content = c
+
+class PictureEntry(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    game = db.Column(db.Integer, unique=True)
+    inResponseTo = db.Column(db.Integer, unique=True)
+    pictures = db.Column(db.String(500), unique=True)
+
+    def __init__(self, gameId, orderId, pic):
+        self.game = gameId
+        self.inResponseTo = orderId
+        self.pictures = pic
+
+    def __repr__(self):
+        return id
+
+    def getGame(self):
+        return self.game
+
+    def getInResponseTo(self):
+        return self.inReponseTo
+
+    def getPictures(self):
+        return pictures
+
+    def setGame(self, g):
+        self.game = g
+        return
+
+    def setInReponseTo(self, i):
+        self.inReponseTo = i
+        return
+
+    def setPictures(self, c):
+        self.pictures = c
 
