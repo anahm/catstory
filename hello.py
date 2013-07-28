@@ -33,7 +33,7 @@ def testPusher():
 @app.route('/makeGame', methods=['POST', 'GET'])
 def makeGame():
 	if request.method == 'POST':
-		# username = request.form['username']
+		username = request.form['username']
 		# # make player object
 		# clientId = 1 #TODO(junjun): make random Id
 		# player = Player(username, clientId)
@@ -53,7 +53,7 @@ def makeGame():
 		# make a game object
 		# get game id
 		session['gameId'] = gameId
-		return render_template('start.html', gameId=gameId)
+		return render_template('start.html', gameId=gameId, username=username)
 	abort(401)
 
 @app.route('/confirmStart')
