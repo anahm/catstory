@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+	{% block title %}join game!{% endblock %}
+	{% block headerTitle %}join game{% endblock %}
+	{% block head %}
+		{{ super() }}
+		<script type="text/javascript">
+		var channel = pusher.subscribe('test_channel');
+		$(document).ready(function() {
+			$("#joinGame").click(function() {
+				$.post('/join', { username: "Peter", gameId: 1 });
+			});
+		});
+	  	</script>
+	{% endblock %}
+	{% block content %}
+		<p>Waiting for players...</p>
+		<button id="joinGame">Join game</button>	
+	{% endblock %}

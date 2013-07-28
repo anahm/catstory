@@ -1,6 +1,19 @@
-<!doctype html>
-<h1> This is game: {{gameId}} </h1>
-<h1> session gameId: {{session.gameId}} </h1>
-<h1> session: {{session}} </h1>
-<h1> url: www.catstory.com/{{gameId}}<h1>
-<h1> session: {{session}} </h1>
+{% extends "base.html" %}
+	{% block title %}starting soon{% endblock %}
+	{% block headerTitle %}starting a game{% endblock %}
+	{% block head %}
+		{{ super() }}
+		<script type="text/javascript">
+		var channel = pusher.subscribe('test_channel');
+		channel.bind('game{{gameId}}', function(data) {
+			$("#joined_user_list").append('<li>' + data.newPlayer.name + '</li>');
+		});
+	  	</script>
+	{% endblock %}
+	{% block content %}
+		<p>Waiting for players...</p>
+		<ul id="joined_user_list">
+			<li>Your name</li>
+		</ul>
+		<button id="startGame">Start game</button>	
+	{% endblock %}

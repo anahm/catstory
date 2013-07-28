@@ -1,22 +1,13 @@
-<!doctype html>
-<head>
-	<title>catstory</title>
-  <script src="http://js.pusher.com/2.1/pusher.min.js" type="text/javascript"></script>
-  <script type="text/javascript">
-    // Enable pusher logging - don't include this in production
-    Pusher.log = function(message) {
-      if (window.console && window.console.log) {
-        window.console.log(message);
-      }
-    };
-
-    var pusher = new Pusher('f0690b5e328eda453c5b');
-    var channel = pusher.subscribe('test_channel');
-    channel.bind('my_event', function(data) {
-      alert(data.message);
-    });
-  </script>
-</head>
-<body>
-HELLO WORLD! :D
-</body>
+{% extends "base.html" %}
+	{% block title %}welcome{% endblock %}
+	{% block head %}
+		{{ super() }}
+		<script type="text/javascript">
+		var channel = pusher.subscribe('test_channel');
+		channel.bind('my_event', function(data) {
+		});
+	  	</script>
+	{% endblock %}
+	{% block content %}
+		<a href="/makeGame"><button>Start game</button></a>
+	{% endblock %}
