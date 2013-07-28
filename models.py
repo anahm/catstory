@@ -39,6 +39,6 @@ class PictureEntry(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     game = db.Column(db.Integer, db.ForeignKey('game.id'))
     inResponseTo = db.Column(db.Integer)
-    pictures = db.Column(db.String(500))
+    pictures = db.Column(db.String(2000))
     fromId = db.Column(db.Integer, db.ForeignKey('player.id'))
     round = db.Column(db.Integer)
