@@ -11,6 +11,7 @@ from nltk.corpus import stopwords
 # db boilerplate code?
 from flask.ext.sqlalchemy import SQLAlchemy
 
+nltk.data.path.append('./nltk_data/')
 app = Flask(__name__)
 app.config['DEBUG'] = True
 app.secret_key = '\xd8\xd0=\x1b\xcf5\xc0\xd7gt\xc1#\xffT\xe1i^*2Bq\x8ad\xd7'
