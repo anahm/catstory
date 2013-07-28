@@ -16,3 +16,20 @@ class Player(db.Model):
     name = db.Column(db.String(80))
     clientId = db.Column(db.Integer, unique=True)
     game_id = db.Column(db.Integer, db.ForeignKey('game.id'))
+    order = db.Column(db.Integer)
+
+class TextEntry(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    game = db.Column(db.Integer, db.ForeignKey('game.id'))
+    inResponseTo = db.Column(db.Integer)
+    content = db.Column(db.String(120))
+    fromId = db.Column(db.Integer, db.ForeignKey('player.id'))
+    round = db.Column(db.Integer)
+
+class PictureEntry(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    game = db.Column(db.Integer, db.ForeignKey('game.id'))
+    inResponseTo = db.Column(db.Integer)
+    pictures = db.Column(db.String(500))
+    fromId = db.Column(db.Integer, db.ForeignKey('player.id'))
+    round = db.Column(db.Integer)

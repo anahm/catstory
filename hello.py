@@ -37,7 +37,7 @@ def makeGame():
 
 		# make player object
 		clientId = random.randrange(0, 10000) #TODO(junjun): make random Id
-		player = Player(name=username, clientId=clientId)
+		player = Player(name=username, clientId=clientId, order=0)
 		db.session.add(player)
 		# make a game object
 		#TODO(junjun): figure out how to make player list
@@ -79,6 +79,8 @@ def join():
 		gameId = session['gameId']
 		# create player
 		player = Player(name=username, clientId=clientId)
+		curSize = Player.query.filter_by(game_id = gameId).count()
+		player.order = curSize
 		db.session.add(player)
 		# add player to game
 		game = Game.query.filter_by(id = gameId).first()
@@ -94,56 +96,58 @@ def join():
 def receiveData():
 	if request.method == 'POST':
 		# get user
-		clientId = POST['clientId'] # is this a thing?
-		user = Player.query.filter_by(clientId = clientId).first()
+		clientId = request.form['clientId'] # is this a thing?
+		player = Player.query.filter_by(clientId = clientId).first()
 		# # get game
 		gameId = POST['gameId']
 		game = Game.query.filter_by(id = gameId).first()
-		# # currentPlayerIndex = game.players index of clientId
-		# prevPlayer = game.players.get(currentPlayerIndex--) # mod 
-		# # check if text or picture
-		# if (game.currentRound % 2 == 0): 
-		# # from text/pictures, get game = game, round = game.currentRound, from = game.user.previous
-		# 	entry = TextEntry.query.filter_by(game = gameId, round = game.currentRound-1, from = prevPlayer)
-		# 	# return entry.content + entry._id
-		# else:
-		# 	entry = PicturesEntry.query.filter_by(game = gameId, round = game.currentRound-1, from = prevPlayer)
-		# 	# return entry.pictures + entry._id
+		prevOrder = (player.order - 1) % game.players.count()
+		prevPlayer = Player.query.filter_by(game_id = gameId, order = prevOrder)
+		# check if text or picture
+		if (game.currentRound % 2 == 0): 
+			entry = TextEntry.query.filter_by(game = gameId, round = game.currentRound-1, fromId = prevPlayer.id)
+			db.session.add(entry)
+			db.session.commit()
+		 	return render_template('recieveText.html', content = entry.content, inResponseTo = entry.id)
+		else:
+		 	entry = PicturesEntry.query.filter_by(game = gameId, round = game.currentRound-1, fromId = prevPlayer.id)
+		 	db.session.add(entry)
+		 	db.session.commit()
+		 	return render_template('recievePictures.html', content = entry.pictures, inResponseTo = entry.id)
 		return "results"
 	abort(401)
 
 @app.route('/sendText', methods=['POST', 'GET'])
 def sendData():
 	if request.method == 'POST':
-		# # get user
-		# clientId = POST['clientId'] # is this a thing?
-		# user = User.query.filter_by(clientId = clientId).first()
-		# # get game
-		# gameId = POST['gameId']
-		# game = Game.query.filter_by(id = gameId).first()
-		# content = request.form['content']
-		# inResponseTo = request.form['prevId']
-		# #check if text or picture
-		# size = 0
-		# if (game.currentRound % 2 == 0): 
-		# #make picture/text: game = game, pictures = request.form['pictures/text'], inresponseto = request.form['prevId'], from = user, round = game.round
-		# 	textEntry = TextEntry(game._id, content, inResponseTo, clientId, game.currentRound)
-		# 	db.session.add(textEntry)
-		# 	db.session.commit()
-		# 	size = TextEntry.query.filter_by(gameId = game._id, round=game.currentRound).size()
-		# else:
-		# 	pictureEntry = PicturesEntry(game._id, content, inResponseTo, clientId, game.currentRound)
-		# 	db.session.add(pictureEntry)
-		# 	db.session.commit()
-		# 	size = PictureEntry.query.filter_by(gameId = game._id, round=game.currentRound).size()
-		# #size = get all from picture/text: game = game, round = round
-		# if (size == game.players.size):
-		# 	game.round++
-		# 	if (game.round == game.numRounds):
-		# 		#TODO(peter): sockets call to end
-		# 	else: 
-		# 		#TODO(peter): sockets call to start new game
-		# else:
-		# 	return "sent"
+		# get user
+		clientId = request.form['clientId'] # is this a thing?
+		player = Player.query.filter_by(clientId = clientId).first()
+		# get game
+		gameId = POST['gameId']
+		game = Game.query.filter_by(id = gameId).first()
+		content = request.form['content']
+		inResponseTo = request.form['inResponseTo']
+		#check if text or picture
+		size = 0
+		if (game.currentRound % 2 == 0): 
+		#make picture/text: game = game, pictures = request.form['pictures/text'], inresponseto = request.form['prevId'], from = user, round = game.round
+		 	textEntry = TextEntry(game = gameId, content = content, inResponseTo = inResponseTo, fromId = player.id, round = game.currentRound)
+		 	db.session.add(textEntry)
+		 	db.session.commit()
+		 	size = TextEntry.query.filter_by(gameId = gameId, round=game.currentRound).count()
+		else:
+		 	pictureEntry = PicturesEntry(game = gameId, content = content, inResponseTo = inResponseTo, fromId = player.id, round = game.currentRound)
+		 	db.session.add(pictureEntry)
+		 	db.session.commit()
+		 	size = PictureEntry.query.filter_by(gameId = gameId, round=game.currentRound).count()
+		if (size == game.players.size):
+		 	game.currentRound = game.currentRound + 1
+		 	if (game.currentRound == game.numRounds):
+		 		#TODO(peter): sockets call to end
+		 		print "end"
+		 	else: 
+		 		#TODO(peter): sockets call to start new round
+		 		print "new"
 		return "sent"
 	abort(401)
