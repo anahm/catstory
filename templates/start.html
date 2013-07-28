@@ -15,11 +15,12 @@
 					addPlayerToList(players[i].name);
 				}
 			});
+			new QRCode(document.getElementById("qrcode"), "http://cats.ptzlabs.com/join/{{session.gameId}}");
 		})
 	  	</script>
 	{% endblock %}
 	{% block content %}
-		<p>Session id: {{session.gameId}}</p>
+		<div id="qrcode"></div>
 		<p>Waiting for players...</p>
 		{% include 'includes/userlist.html' %}
 		<a href="/confirmStart"><button id="startGame">Start game</button></a>
