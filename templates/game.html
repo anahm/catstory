@@ -4,6 +4,7 @@
 	{% block head %}
 		{{ super() }}
 		<script type="text/javascript">
+			var inResponseTo = null
 			updateRound = function() {
 				$.post('/getData', {clientId: {{session.clientId}}, gameId: {{session.gameId}} }, function(data) {
 					data = JSON.parse(data);
@@ -16,15 +17,19 @@
 						$("#prev-text-entry").html(data.content);
 						$("#picture-entry").fadeIn(100)
 					}
+					if(data.inResponseTo != undefined) {
+						inResponseTo = data.inResponseTo;
+					}
 				});
 			}
 			var channel = pusher.subscribe('game{{session.gameId}}');
 			channel.bind('newRound', function() {
-				console.log('new round');
+				updateRound();
 			});
 			$(document).ready(function() {
 				updateRound();	
 				$("#text-entry-form").submit(function() {
+					$(this).fadeOut(100);
 					textEntry = $(this).find('input[name=textEntry]').val();
 					$.post('/sendData', {
 						clientId: {{session.clientId}},
@@ -32,7 +37,7 @@
 						content: textEntry,
 						inResponseTo: null}, function() {
 							console.log('sent');
-						})
+						});
 					return false;
 				})
 			});
@@ -65,24 +70,53 @@
 								for(var i = 0; i < d.length; i++) {
 									$("ul#images").append('<li class="image"><img src="' + d[i].MediaUrl + '" /></li>');
 								}
+
+								$("ul#images li.image").click(function() {
+									$(this).hide(200);
+									imgSrc = $(this).find('img').attr('src');
+									if(!$("ul#selected-images").is(':visible')) {
+										$("ul#selected-images").slideDown(200);
+									}
+									$("ul#selected-images").append('<li class="image"><img src="' + imgSrc + '" /></li>');
+								})
 							});	
 						})
 						return false;
 					});
+					$("#submit-pic-entry").click(function() {
+						pictures = []
+						$("#pic-entry-form").slideUp(200);
+						$("ul#selected-images li img").each(function() {
+							imgSrc = $(this).attr('src');
+							pictures.push(imgSrc);
+						});
+						$.post('/sendData', {
+							clientId: {{session.clientId}},
+							gameId: {{session.gameId}},
+							content: JSON.stringify(pictures),
+							inResponseTo: inResponseTo}, function() {
+								console.log('sent');
+							});
+					});
 				});
 		  	</script>
-			<ul id="images">
-				<li class="loading" style="display: none">
-					Loading...
-				</li>
-				<li class="start">
-					Start describing your sentence by searching for images
-				</li>
-			</ul>
+		  	<ul id="selected-images" style="display: none">
+		  	</ul>
+		  	<div id="pic-entry-form">
+				<ul id="images">
+					<li class="loading" style="display: none">
+						Loading...
+					</li>
+					<li class="start">
+						Start describing your sentence by searching for images
+					</li>
+				</ul>
 
-			<form id="image_search_form">
-				<input type="text" name="query" placeholder="Start searching for image..." />
-			</form>
+				<form id="image_search_form">
+					<input type="text" name="query" placeholder="Start searching for image..." />
+				</form>
+				<button id="submit-pic-entry">Send!</button>
+			</div>
 		</div>
 	{% endblock %}
 

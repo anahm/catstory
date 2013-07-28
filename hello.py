@@ -130,7 +130,7 @@ def sendData():
 		 	db.session.commit()
 		 	size = TextEntry.query.filter_by(game = gameId, round=game.currentRound).count()
 		else:
-		 	pictureEntry = PictureEntry(game = gameId, content = content, inResponseTo = inResponseTo, fromId = player.id, round = game.currentRound)
+		 	pictureEntry = PictureEntry(game = gameId, pictures = content, inResponseTo = inResponseTo, fromId = player.id, round = game.currentRound)
 		 	db.session.add(pictureEntry)
 		 	db.session.commit()
 		 	size = PictureEntry.query.filter_by(game = gameId, round=game.currentRound).count()
