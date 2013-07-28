@@ -47,6 +47,16 @@ div.welcome div.example {
 	padding: 10px;
 }
 
+div.welcome div.username {
+	background: #eee;
+	padding: 3px 10px;
+	border-radius: 3px;
+	font-size: 11px;
+	width: auto;
+	display: block;
+	display: inline-block;
+}
+
 .content {
 	padding: 10px;
 }
@@ -61,6 +71,18 @@ div.welcome div.example {
 	font-size: 15px;
 	padding: 10px;
 	margin-bottom: 10px;
+}
+#image_search_form {
+	overflow: hidden;
+	margin-bottom: 10px;
+}
+#image_search_form input {
+	width: 70%;
+	float: left;
+}
+#image_search_form button {
+	width: 28%;
+	float: right;
 }
 .content button {
 	background-color: #ee432e;
