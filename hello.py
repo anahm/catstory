@@ -4,6 +4,8 @@ from flask import Flask, session, render_template
 # db boilerplate code?
 from flask.ext.sqlalchemy import SQLAlchemy
 
+from models import Sentence
+
 app = Flask(__name__)
 app.config['DEBUG'] = True
 app.secret_key = '\xd8\xd0=\x1b\xcf5\xc0\xd7gt\xc1#\xffT\xe1i^*2Bq\x8ad\xd7'
