@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+	{% block title %}welcome{% endblock %}
+	{% block head %}
+		{{ super() }}
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$("#image_search_form").submit(function() {
+					$("ul#images li.image").remove();
+					$("ul#images li.start").fadeOut(100);
+					$("ul#images li.loading").fadeIn(100);
+					query = $("input[name=query]").val();
+					$.post('/imageSearch/' + query, function(data) {
+						$("ul#images li.loading").fadeOut(100, function() {
+							d = JSON.parse(data).d.results;
+							for(var i = 0; i < d.length; i++) {
+								$("ul#images").append('<li class="image"><img src="' + d[i].MediaUrl + '" /></li>');
+							}	
+						});	
+					})
+					return false;
+				});
+			})
+	  	</script>
+	{% endblock %}
+	{% block content %}
+		<ul id="images">
+			<li class="loading" style="display: none">
+				Loading...
+			</li>
+			<li class="start">
+				Start describing your sentence by searching for images
+			</li>
+		</ul>
+
+		<form id="image_search_form">
+			<input type="text" name="query" placeholder="Start searching for image..." />
+		</form>
+	{% endblock %}

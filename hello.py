@@ -1,6 +1,10 @@
 import os
-from flask import Flask, session, render_template, request, abort
-import pusher, random
+from flask import Flask, session, render_template, url_for, request, abort
+import pusher
+import random
+import requests
+from requests.auth import HTTPBasicAuth
+#from _ import Game, Player, TextEntry, PicturesEntry
 
 # db boilerplate code?
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -8,6 +12,9 @@ from flask.ext.sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 app.config['DEBUG'] = True
 app.secret_key = '\xd8\xd0=\x1b\xcf5\xc0\xd7gt\xc1#\xffT\xe1i^*2Bq\x8ad\xd7'
+
+BING_LINK = 'https://api.datamarket.azure.com/Bing/Search/Image?$format=json'
+BING_API_KEY = 'N95x+ajghz4OP94AMQgR46/TkWDBwxmtatNd5Wkvkrc'
 
 #app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
@@ -151,3 +158,13 @@ def sendData():
 		 		print "new"
 		return "sent"
 	abort(401)
+
+# TESTTTTTT
+@app.route('/image')
+def image():
+	return render_template("image.html")
+
+@app.route('/imageSearch/<query>', methods=['POST', 'GET'])
+def imageSearch(query):
+	r = requests.get(BING_LINK + "&Query=%27" + query + "%27", auth=HTTPBasicAuth(BING_API_KEY, BING_API_KEY))
+	return r.text
