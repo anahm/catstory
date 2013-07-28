@@ -1,5 +1,5 @@
 import os
-from flask import Flask, session, render_template
+from flask import Flask, session, render_template, request, abort
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
@@ -15,7 +15,7 @@ def makeGame():
 	# get game id
 	gameId = 1
 	session['gameId'] = gameId
-	return gameId	
+	return "HI " + str(gameId)	
 
 @app.route('/game/<int:gameId>')
 def game(gameId):
