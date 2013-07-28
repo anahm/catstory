@@ -114,7 +114,8 @@ def getFinalResults():
 			print "here"
 			# even number of players. last player submitted pictures
 			entry = PictureEntry.query.filter_by(game = gameId, round = game.numRounds-1, fromId = prevPlayer.id).first()
-			results.append(dict(content = entry.pictures, type="pic"))
+			player = Player.query.filter_by(id = entry.fromId).first()
+			results.append(dict(content = entry.pictures, type="pic", playerName=player.name))
 			prevEntryId = entry.inResponseTo
 			if game.numRounds > 1:
 				# python range is non inclusive on upper side
@@ -122,34 +123,36 @@ def getFinalResults():
 					if i % 2 == 0:
 						# text entry
 						entry = TextEntry.query.filter_by(id = prevEntryId).first()
-						results.append(dict(content = entry.content, type="text"))
+						player = Player.query.filter_by(id = entry.fromId).first()
+						results.append(dict(content = entry.content, type="text", playerName=player.name))
 						prevEntryId = entry.inResponseTo
 					else:
 						# pic entry
 						entry = PictureEntry.query.filter_by(id = prevEntryId).first()
-						results.append(dict(content = entry.pictures, type="pic"))
+						player = Player.query.filter_by(id = entry.fromId).first()
+						results.append(dict(content = entry.pictures, type="pic", playerName=player.name))
 						prevEntryId = entry.inResponseTo
 
 		else:
 			# odd number of players. last player submitted text
 			entry = TextEntry.query.filter_by(game = gameId, round = game.numRounds-1, fromId = prevPlayer.id).first()
-			results.append(dict(content = entry.content, type="text"))
+			player = Player.query.filter_by(id = entry.fromId).first()
+			results.append(dict(content = entry.content, type="text", playerName=player.name))
 			prevEntryId = entry.inResponseTo
-			print "test"
-			print entry.inResponseTo
 			if game.numRounds > 1:
 				# python range is non inclusive on upper side
 				for i in range(2, game.numRounds + 1):
 					if i % 2 == 1:
 						# text entry
 						entry = TextEntry.query.filter_by(id = prevEntryId).first()
-						results.append(dict(content = entry.content, type="text"))
-						print entry.inResponseTo
+						player = Player.query.filter_by(id = entry.fromId).first()
+						results.append(dict(content = entry.content, type="text", playerName=player.name))
 						prevEntryId = entry.inResponseTo
 					else:
 						# pic entry
 						entry = PictureEntry.query.filter_by(id = prevEntryId).first()
-						results.append(dict(content = entry.pictures, type="pic"))
+						player = Player.query.filter_by(id = entry.fromId).first()
+						results.append(dict(content = entry.pictures, type="pic", playerName=player.name))
 						prevEntryId = entry.inResponseTo
 
 		return json.dumps(results)
